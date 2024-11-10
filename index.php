@@ -58,23 +58,15 @@ switch($action) {
         break;
 
     case 'change_status':
-        // $id = $_GET['id'];
-        // $status = $_POST['status'];
-        // $taskController->changeStatus($id, $status, $page);
-        // break;
         // Handle AJAX request to change task status
 
         if (isset($_POST['id']) && isset($_POST['status'])) {
             header('Content-Type: application/json');
             $id = $_POST['id'];
             $status = $_POST['status'];
-            try {
-                $taskController->changeStatus($id, $status, $page);
-                echo json_encode(['success' => true]);
-            } catch (Exception $e) {
-                error_log("Error changing status: " . $e->getMessage());
-                echo json_encode(['success' => false, 'error' => 'Could not update task status.']);
-            }
+            $taskController->changeStatus($id, $status, $page);
+            echo json_encode(['success' => true]);
+
         } else {
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'error' => 'Invalid parameters']);
