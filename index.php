@@ -9,6 +9,16 @@ $userController = new UserController();
 $action = $_GET['action'] ?? '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
+if(!isset($_SESSION['user_id']) && isset($_COOKIE['remember_me'])) {
+    $user = $userController->verifyToken($_COOKIE['remember_me']);
+    if($user) {
+        $_SESSION['user_id'] = $user['id'];
+    } else {
+        $userController->clearTokenByCookie($_COOKIE['login_token']);
+        setcookie('login_token', '', time() - 3600, '/');
+    }
+}
+
 switch($action) {
     case 'register':
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -18,7 +28,9 @@ switch($action) {
             $userController->register($username, $password, $email);
             header("Location: /todo_app_auth/?action=login");
         } else {
+            require 'app/views/default/loginHeader.php';
             require 'app/views/register.php';
+            require 'app/views/default/footer.php';
         }
         break;
     
@@ -32,10 +44,14 @@ switch($action) {
                 exit;
             } else {
                 $error = "Invalid username or password";
+                require 'app/views/default/loginHeader.php';
                 require 'app/views/login.php';
+                require 'app/views/default/footer.php';
             }
         } else {
+            require 'app/views/default/loginHeader.php';
             require 'app/views/login.php';
+            require 'app/views/default/footer.php';
         }
         
         break;

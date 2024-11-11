@@ -32,7 +32,7 @@ class User {
     public function findByEmail($email) {
         $query = "SELECT * FROM " . $this->table . " WHERE email = :email LIMIT 1";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':username', $email);
+        $stmt->bindParam(':email', $email);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -45,10 +45,46 @@ class User {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function storeToken($user_id, $token){
+        $query = "UPDATE " . $this->table . " SET login_token = :token WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':token', $token);
+        $stmt->bindParam(':id', $user_id);
+        return $stmt->execute();
+    }
+
+    public function findByToken($token) {
+        $query = "SELECT * FROM " . $this->table . " WHERE login_token = :token LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':token', $token);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function clearToken($user_id) {
+        $query = "UPDATE " . $this->table . " SET login_token = NULL WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $user_id);
+        return $stmt->execute();
+    }
+    public function clearTokenByCookie($token) {
+        $query = "UPDATE " . $this->table . " SET login_token = NULL WHERE login_token = :token";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':token', $token);
+        return $stmt->execute();
+    }
+
     public function verifyLogin($username, $password) {
         $founduser = $this->findByUsername($username);
         if($founduser && password_verify($password, $founduser['password'])) {
             $_SESSION['user_id'] = $founduser['id'];
+
+            if(isset($_POST['remember'])) {
+                $token = bin2hex(random_bytes(32));
+                $this->storeToken($founduser['id'], $token);
+                setcookie('remember_me', $token, time() + (86400 * 30), "/", "", false, false);
+            }
+
             return $founduser;
         }
         return false;
