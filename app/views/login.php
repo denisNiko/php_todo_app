@@ -30,23 +30,3 @@
             </div>
         </div>
     </div>
-
-<!-- <?php //if (isset($error)): ?>
-    <p style="color:red;"><?php //echo $error; ?></p>
-<?php //endif; ?>
-<form action="/todo_app_auth/?action=login" method="POST">
-    <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" class="form-control" required>
-    </div>
-    <div class="form-check">
-        <input type="checkbox" id="remember" name="remember" class="form-check-input">
-        <label class="form-check-label" for="remember">Keep me logged in</label>
-    </div>
-    <button type="submit" class="btn btn-primary">Login</button>
-    <a class="page-link" href="?action=register">register</a>
-</form> -->
